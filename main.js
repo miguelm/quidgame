@@ -7,6 +7,8 @@ var gameSoup_World;
 function QGame(gs) {
 	// Global vars
 	var r = new SeedableRandom();
+	var d = new Date;
+	r.seed(d.getTime());
 	
 	/*** The Ball class ***/
 	function Ball(world) {
@@ -56,15 +58,16 @@ function QGame(gs) {
 		this.type = 'adamastor';
 		
 		// constants
+		var adamastor = this;
 		
 		// position
-		pos = this.pos = [(gs.width / 2)+40, gs.height / 2];
+		var pos = this.pos = [(gs.width / 2)+40, gs.height / 2];
 				
-		var body = this.body;
+		var body = this.body = null;
 		
 		this.init = function() {
 			//body = createBox(worldOut, pos[0], pos[1], 50, 50, false);
-			body = this.body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [0, -p.height], [p.width, -p.height], [p.width, 0]]], false);
+			
 		}
 		
 		// sprite which represents the Adamastor
@@ -74,6 +77,7 @@ function QGame(gs) {
 		// callback gets called when everything is loaded
 		function() {
 			p.action("stand");
+			body = adamastor.body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [0, -p.height], [p.width, -p.height], [p.width, 0]]], false);
 		});
 		
 		// draw the adamastor sprite every frame
@@ -88,8 +92,11 @@ function QGame(gs) {
 		
 		// update the adamastor position every frame
 		this.update = function() {
-			pos[0] = body.m_position.x;
-			pos[1] = body.m_position.y;
+			if (body)
+			{
+				pos[0] = body.m_position.x;
+				pos[1] = body.m_position.y;
+			}
 		}
 				
 	}
@@ -150,6 +157,11 @@ function QGame(gs) {
 	function Object(world, pos) {
 		this.type = 'object';
 				
+		// constants
+		var red = r.nextInt(0, 255);
+		var green = r.nextInt(0, 255);
+		var blue = r.nextInt(0, 255);
+		
 		// current position
 		this.pos = pos;
 		
@@ -180,7 +192,8 @@ function QGame(gs) {
 		// draw this platform's sprite every frame
 		this.draw = function(c) {
 			//p.draw(c, world.camera(pos));
-			drawBody(body, c, "rgba(0, 255, 0, 1)");
+			drawBody(body, c, "rgba("+ red +"," + green + "," + blue + ", 1)");
+			//drawBody(body, c, "rgba(0, 255, 0, 1)");
 		}
 		
 	}
