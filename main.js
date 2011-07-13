@@ -27,8 +27,7 @@ function QGame(gs) {
 		
 		// sprite which represents the ball
 		var p = new Sprite(["center", "bottom"], {
-			"stand": [["img/character-stand.png", 0],],
-			"fall": [["img/character-fall-1.png", FALL_FRAMES], ["img/character-fall-2.png", FALL_FRAMES],],
+			"stand": [["img/adamastor.png", 0],],
 		},
 		// callback gets called when everything is loaded
 		function() {
@@ -162,8 +161,15 @@ function QGame(gs) {
 		var green = r.nextInt(0, 255);
 		var blue = r.nextInt(0, 255);
 		
+		var width = 50;
+		var height = 50;
+		
+		this.dragging = false;
+		
 		// current position
-		this.pos = pos;
+		var pos = this.pos = pos;
+		
+		var posOffSet = [0,0];
 		
 		// closureify
 		var object = this;
@@ -181,19 +187,73 @@ function QGame(gs) {
 		
 		// called when this entity is added
 		this.init = function() {
-			body = this.body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [0, -50], [50, -50], [50, 0]]], false);
+			//body = this.body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [width, 0], [width, height], [0, height]]], false);
+			//body = this.body = function() {	}
 		}
 		
 		// update this platform's position every frame
 		this.update = function() {
-
+			if (body)
+			{
+				//alert("old: " + pos[0] + " " + pos[1]);
+				pos[0] = body.m_position.x;
+				pos[1] = body.m_position.y;
+				//pos[0] = (body.m_position.x + gs.canvas.height) % gs.canvas.height;
+				//pos[1] = (body.m_position.x + gs.canvas.width) % gs.canvas.width;
+				//alert("new: " + pos[0] + " " + pos[1]);
+			}
 		}
 		
 		// draw this platform's sprite every frame
 		this.draw = function(c) {
 			//p.draw(c, world.camera(pos));
-			drawBody(body, c, "rgba("+ red +"," + green + "," + blue + ", 1)");
 			//drawBody(body, c, "rgba(0, 255, 0, 1)");
+			//drawBody(body, c, "rgba("+ red +"," + green + "," + blue + ", 1)");
+			
+			var fill = c.fillStyle;
+			c.fillStyle = "#444444";
+			c.beginPath();
+		 	c.rect(pos[0],pos[1],width,height);
+		 	c.closePath();
+		 	c.fill();
+		
+			c.fillStyle = fill;
+			
+
+		}
+		
+		this.pointerBox = function() {
+			return [pos[0], pos[1], pos[0]+width, pos[1]+height];
+		}
+		
+		this.pointerDown = function(i) {
+			//alert("dragging started");
+			if (!this.dragging){
+				this.dragging = true;
+				
+				posOffSet[0] = pos[0] - gs.pointerPosition[0];
+				posOffSet[1] = pos[1] - gs.pointerPosition[1];						
+				
+				//body.m_position.x = gs.pointerPosition[0];
+				//body.m_position.y = gs.pointerPosition[1];
+			}			
+		}
+		
+		this.pointerMove = function() {
+			if (this.dragging){
+				
+				pos[0] = gs.pointerPosition[0] + posOffSet[0];
+				pos[1] = gs.pointerPosition[1] + posOffSet[1];
+				//body.m_position.x = gs.pointerPosition[0];
+				//body.m_position.y = gs.pointerPosition[1];
+			}
+			
+		}
+		
+		this.pointerUp = function(i) {
+			//alert("dragging ended");
+			if (this.dragging)
+				this.dragging = false;
 		}
 		
 	}
@@ -296,7 +356,8 @@ function QGame(gs) {
 		}
 		
 		/*** mouse/finger detection ***/
-
+		
+		/*
 		this.pointerDown = function() {
 			if (gs.pointerPosition[0] < gs.width / 2) {
 				//player.keyDown_37();
@@ -312,6 +373,7 @@ function QGame(gs) {
 		this.pointerBox = function() {
 			return [0, 0, gs.width, gs.height];
 		}
+		*/
 		
 		// remove a platform from the world
 		this.remove = function(which) {
