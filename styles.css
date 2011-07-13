@@ -1,0 +1,57 @@
+body {
+	background: #E2EBED;
+	color: #444;
+	font-family: "Myriad Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+canvas {
+	background: white;
+	/*border: 1px solid gray;*/
+	box-shadow: 0 .3em 1em black;
+	-moz-box-shadow: 0 .3em 1em black;
+	-webkit-box-shadow: 0 .3em 1em black;
+}
+	
+#main {
+	width: 640px; 
+	text-align: left;
+	border: 0px; 
+	padding: 10px;  
+	margin: 15px auto;	
+    position: relative;
+}
+
+h1, h2, span {
+	text-align: center;
+}
+
+#toolbar {
+	border: 1px dashed #222;
+	position: absolute;
+	width:640px;
+}
+
+#toolbar div {
+	width: 64px;
+	float:left;
+	padding: 10px 10px;
+	text-align: center;
+}
+
+.tool span {
+	background-color: white;
+	padding: 5px 5px;
+	position: relative;
+}
+
+.tool img {
+	display: inline;
+	width: 64px;
+	height: 64px;
+	padding-top: 10px;
+	position: relative;
+}
+
+.tool:hover {
+	background-color: grey;
+}
