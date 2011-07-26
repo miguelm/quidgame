@@ -1,0 +1,13 @@
+# Vim
+.*.sw[a-z]
+*.un~
+Session.vim
+
+# OSX
+.DS_Store
+Icon?
+._*
+
+# Windows
+Thumbs.db
+Desktop.ini
