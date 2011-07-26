@@ -5,7 +5,7 @@ body {
 }
 
 canvas {
-	background: white;
+	background: url("img/bg.png") no-repeat;
 	/*border: 1px solid gray;*/
 	box-shadow: 0 .3em 1em black;
 	-moz-box-shadow: 0 .3em 1em black;
@@ -54,4 +54,27 @@ h1, h2, span {
 
 .tool:hover {
 	background-color: grey;
+}
+
+#winScreen {
+	position:absolute;
+	width:640px;
+	height:360px;
+	display:none;
+	text-align:center;
+}
+
+#winScreen .window {
+	margin: 100px auto auto auto;
+	width:200px;
+	height:125px;
+	background: #ffffff;
+	box-shadow: 0 .3em 1em black;
+	-moz-box-shadow: 0 .3em 1em black;
+	-webkit-box-shadow: 0 .3em 1em black;
+	border-radius: 10px;
+}
+
+#winScreen .window div {
+	padding-top: 30px;
 }

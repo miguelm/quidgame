@@ -1,7 +1,7 @@
 # Quidgame
 
 ## About
-Quidgame is a physics game done for marketing and promotion of [Quidgest][0] Q-Day event where the purpose is to defeat Adamastor, a mythological creature said to be the cause of sailing hardships in the 1500s. Developed using HTML5 Canvas using the [jsGameSoup][1] library and [Box2djs][2] physics engine.
+Quidgame is a physics game done for marketing and promotion of [Quidgest][0] Q-Day event where the purpose is to defeat Adamastor, a mythological creature said to be the cause of sailing hardships in the 1500s. Developed with HTML5 Canvas using the [jsGameSoup][1] library and [Box2djs][2] physics engine.
 
 ### Screenshot
 ![Quidgame running](http://dl.dropbox.com/u/175565/Quidgest/Projects/QGame/quidgame_screen1.png)

@@ -22,29 +22,42 @@
 
 	<div id="main">
 		<h1>Quid Game Prototype</h1>
+		<div id="winScreen">
+			<div class="window">
+				<div>
+					Ganhou!<br /><br />
+					<input type="button" value="Jogar novamente" onclick="javascript:doRestart();" />
+				</div>
+			</div>
+		</div>
 		<canvas width="640" height="360" id="canvas"></canvas>
+		
+		<div id="controls">
+			<input type="button" value="run" onclick="javascript:doRun();" />
+			<input type="button" value="reset" onclick="javascript:doReset();" />
+		</div>
 		
 		<div id="toolbar">
 			
-			<div class="tool" onclick="createRamp()">
-				<span>Ramp</span>
+			<!--div class="tool" onclick="createRamp()">
+				<span>Rampa</span>
 				<img src="img/ramp_icon.gif" alt="Rampa"/>
-			</div>
+			</div-->
 			
 			<div class="tool" onclick="createWall()">
-				<span>Wall</span>
+				<span>Parede</span>
 				<img src="img/wall_icon.png" alt="Parede"/>
 			</div>
 			
-			<div class="tool" onclick="createWall()">
-				<span>Jump</span>
-				<img src="img/ramp_icon.gif" alt="Parede"/>
+			<div class="tool" onclick="createSpring()">
+				<span>Mola</span>
+				<img src="img/ramp_icon.gif" alt="Mola"/>
 			</div>
 			
-			<div class="tool" onclick="createWall()">
+			<!--div class="tool" onclick="createWall()">
 				<span>Tool</span>
 				<img src="img/wall_icon.png" alt="Parede"/>
-			</div>
+			</div-->
 			
 		</div>
 	</div>
