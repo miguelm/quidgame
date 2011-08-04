@@ -12,5 +12,3 @@
 # Generic
 * More levels
 
-# DONE
-* Boundaries (left,right,top) now work
