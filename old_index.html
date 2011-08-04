@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
+
+<head>
+	<!--[if lt IE 9]>
+		<script type="text/javascript" src="js/excanvas.js"></script>
+	<![endif]-->
+	<title>SoupBox - jsGameSoup + box2d.js</title>
+	
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="js/protoclass.js"></script>
+	<script src="js/box2d.js"></script>
+	<script src="js/jsgamesoup.js"></script>
+	<script src="js/random.js"></script>
+	<script src="js/sprite.js"></script>
+	<script src="main.js"></script> <!-- defines init() -->
+
+</head>
+
+<body onload="launch();">
+
+	<div id="main">
+		<h1>Quid Game Prototype</h1>
+		<div id="winScreen">
+			<div class="window">
+				<div>
+					Ganhou!<br /><br />
+					<input type="button" value="Continuar?" onclick="javascript:doNextLevel();" />
+				</div>
+			</div>
+		</div>
+		
+		<div id="loseScreen">
+			<div class="window">
+				<div>
+					Oh! Perdeu.<br /><br />
+					<input type="button" value="Tentar novamente?" onclick="javascript:doRestart();" />
+				</div>
+			</div>
+		</div>
+		
+		<div id="endScreen">
+			<div class="window">
+				<div>
+					Acabou o jogo!<br /><br />
+					<input type="button" value="Jogar novamente?" onclick="javascript:doRestart();" />
+				</div>
+			</div>
+		</div>
+		
+		<!--<canvas width="640" height="360" id="canvas"></canvas>-->
+		<canvas width="980" height="370" id="canvas"></canvas>
+		
+		<div id="controls">
+			<input type="button" value="run" onclick="javascript:doRun();" />
+			<input type="button" value="reset" onclick="javascript:doReset();" />
+			<input type="button" value="restart" onclick="javascript:doRestart();" />
+		</div>
+		
+		
+		<div id="toolbar">
+			
+			<!--div class="tool" onclick="createRamp()">
+				<span>Rampa</span>
+				<img src="img/ramp_icon.gif" alt="Rampa"/>
+			</div-->
+			
+			<div class="tool" onclick="createWall()">
+				<span>Parede</span>
+				<img src="img/wall_icon.png" alt="Parede"/>
+			</div>
+			
+			<div class="tool" onclick="createSpring()">
+				<span>Mola</span>
+				<img src="img/ramp_icon.gif" alt="Mola"/>
+			</div>
+			
+			<!--div class="tool" onclick="createWall()">
+				<span>Tool</span>
+				<img src="img/wall_icon.png" alt="Parede"/>
+			</div-->
+			
+		</div>
+	</div>
+	
+	<!--
+	<form id="form" onSubmit="send(); return false">
+		<label for="username">Nome</label>
+		<input type="text" id="nome"><input type="submit" value="Send">
+	</form>
+	-->
+</body>
+</html>

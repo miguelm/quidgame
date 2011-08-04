@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
+
+<head>
+	<!--[if lt IE 9]>
+		<script type="text/javascript" src="js/excanvas.js"></script>
+	<![endif]-->
+	<title>QDay Game - Vencer o Adamastor</title>
+	
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="js/protoclass.js"></script>
+	<script src="js/box2d.js"></script>
+	<script src="js/jsgamesoup.js"></script>
+	<script src="js/random.js"></script>
+	<script src="js/sprite.js"></script>
+	<script src="main.js"></script> <!-- defines init() -->
+
+</head>
+
+<body onload="launch();">
+
+	<div id="main">
+		<h1>Vence o Adamastor!</h1>
+		<div id="winScreen">
+			<div class="window">
+				<div>
+					Ganhou!<br /><br />
+					<input type="button" value="Continuar?" onclick="javascript:doNextLevel();" />
+				</div>
+			</div>
+		</div>
+		
+		<div id="loseScreen">
+			<div class="window">
+				<div>
+					Oh! Perdeu.<br /><br />
+					<input type="button" value="Tentar novamente?" onclick="javascript:doRestart();" />
+				</div>
+			</div>
+		</div>
+		
+		<div id="endScreen">
+			<div class="window">
+				<div>
+					Venceu o Adamastor!<br /><br />
+					<input type="button" value="Jogar novamente?" onclick="javascript:doRestart();" />
+				</div>
+			</div>
+		</div>
+		
+		<canvas width="980" height="370" id="canvas"></canvas>
+	</div>
+	
+</body>
+</html>
