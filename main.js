@@ -444,7 +444,7 @@ function QGame(gs) {
 	}
 	
 	/*** Platform ***/
-	function Platform(world, pos, poly) {
+	function Platform(world, pos, poly, image) {
 		this.type = 'platform';
 		
 		// the list of props sitting on this platform
@@ -457,10 +457,12 @@ function QGame(gs) {
 		var platform = this;
 		
 		var body = this.body;
+		
+		var image_file = "img/" + image + ".png";
 			
 		// sprite which represents the Platform
 		var p = this.p = new Sprite(["left", "top"], {
-			"stand": [["img/calhau.png", 0]],
+			"stand": [[image_file, 0]],
 		},
 		// callback gets called when everything is loaded
 		function() {
@@ -1291,7 +1293,7 @@ function QGame(gs) {
 		this.gameEnd = function ()
 		{
 			playerWon = true;
-			if (this.level>=4)
+			if (this.level>=6)
 			{
 				setTimeout(function() { document.getElementById("endScreen").style.display = "block"; }, 3000);
 				this.level = 1;
@@ -1302,7 +1304,7 @@ function QGame(gs) {
 		
 		this.gameLose = function ()
 		{
-			//this.level = 1;
+			this.level = 1;
 			playerLost = true;
 			playerWon = false;			
 			setTimeout(function() { document.getElementById("loseScreen").style.display = "block"; }, 1000);
@@ -1401,54 +1403,73 @@ function QGame(gs) {
 				this.remove(platforms[j]);
 			}
 			
-			if (this.level==1)
+			var poly = [ 
+						[[70,2], [100, 2], [150, 60], [30, 60]],
+			  			[[30,60], [148, 60], [148,108], [-5, 108]]
+						];
+			
+			var poly_big = [ 
+						[[70,2], [105, 2], [110, 60], [30, 60]],
+			  			[[30,60], [108, 60], [142,128], [2, 128]],
+						[[2,128], [142, 128], [147,170], [5, 170]],
+						[[6,170], [147, 170], [158,200], [20, 200]],
+						[[18,200], [158, 200], [170,248], [8, 248]],
+						];
+						
+			var poly_big_inv = [ 
+						[[70,2], [105, 2], [110, 60], [30, 60]],
+			  			[[30,60], [108, 60], [142,128], [2, 128]],
+						[[2,128], [142, 128], [147,170], [5, 170]],
+						[[6,170], [147, 170], [158,200], [20, 200]],
+						[[18,200], [158, 200], [170,248], [8, 248]],
+						];
+
+			if (this.level==6)
 			{
-				// object creation
 				adamastor.setPos(adamastor_position());
 			}
 			else if (this.level==2)
 			{
-				// create rock
-				var poly = [ 
-							[[70,2], [100, 2], [150, 60], [30, 60]],
-				  			[[30,60], [148, 60], [148,108], [-5, 108]]
-							];
-				var rock = new Platform(this,  [515, 208], poly);
-				platforms.push(gs.addEntity(rock));
+				// create multiple rocks
+				var rockOne = new Platform(this, [350, 208], poly, "calhau");
+				var rockTwo = new Platform(this, [750, 208], poly, "calhau");
 				
-				//var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
-				adamastor.setPos([750, 230]);
+				platforms.push(gs.addEntity(rockOne));
+				platforms.push(gs.addEntity(rockTwo));
+				adamastor.setPos([650, 230]);
 			}
 			else if (this.level==3)
 			{
 				// create rock
-				var poly = [ 
-							[[70,2], [100, 2], [150, 60], [30, 60]],
-				  			[[30,60], [148, 60], [148,108], [-5, 108]]
-							];
-				var rock = new Platform(this,  [515, 208], poly);
+				var rock = new Platform(this, [215, 208], poly, "calhau");
 				platforms.push(gs.addEntity(rock));
-				
-				//var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
-				adamastor.setPos([680, 230]);
+				adamastor.setPos([550, 230]);
 			}
 			else if (this.level==4)
 			{
-				// create multiple rocks
 				// create rock
-				var poly = [ 
-							[[70,2], [100, 2], [150, 60], [30, 60]],
-				  			[[30,60], [148, 60], [148,108], [-5, 108]]
-							];
-				var rockOne = new Platform(this,  [490, 208], poly);
-				var rockTwo = new Platform(this,  [750, 208], poly);
+				var rock = new Platform(this, [700, 208], poly, "calhau");
+				platforms.push(gs.addEntity(rock));
+				adamastor.setPos([845, 230]);
+			}
+			else if (this.level==5)
+			{
+				// create multiple rocks
+				var rockOne = new Platform(this, [490, 69], poly_big, "calhau_big");
+				var rockTwo = new Platform(this, [750, 208], poly, "calhau");
 				
 				platforms.push(gs.addEntity(rockOne));
 				platforms.push(gs.addEntity(rockTwo));
-				
-				//var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
 				adamastor.setPos([650, 230]);
 			}
+			else if (this.level==1)
+			{
+				// create multiple rocks
+				var rockOne = new Platform(this, [700, 69], poly_big, "calhau_big");
+				platforms.push(gs.addEntity(rockOne));
+				adamastor.setPos([845, 230]);
+			}
+			
 		}
 	}
 	
@@ -1462,6 +1483,7 @@ function QGame(gs) {
 			"img/slider.png",
 			"img/barco.png",
 			"img/calhau.png",
+			"img/calhau_big.png",
 			"img/cannon.png",
 			"img/bala.png"
 		],
