@@ -2,7 +2,6 @@
 
 ## Game mechanics
 * Object rotation
-* Cannon
 * Number of available pieces
 
 ## Design
