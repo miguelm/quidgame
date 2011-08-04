@@ -1304,6 +1304,7 @@ function QGame(gs) {
 		
 		this.gameLose = function ()
 		{
+			// makes the game harder!
 			this.level = 1;
 			playerLost = true;
 			playerWon = false;			
@@ -1465,9 +1466,9 @@ function QGame(gs) {
 			else if (this.level==6)
 			{
 				// create multiple rocks
-				var rockOne = new Platform(this, [650, 69], poly_big, "calhau_big");
+				var rockOne = new Platform(this, [550, 69], poly_big, "calhau_big");
 				platforms.push(gs.addEntity(rockOne));
-				adamastor.setPos([845, 230]);
+				adamastor.setPos([855, 230]);
 			}
 			
 		}
