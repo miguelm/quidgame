@@ -1424,7 +1424,7 @@ function QGame(gs) {
 						[[18,200], [158, 200], [170,248], [8, 248]],
 						];
 
-			if (this.level==6)
+			if (this.level==1)
 			{
 				adamastor.setPos(adamastor_position());
 			}
@@ -1462,10 +1462,10 @@ function QGame(gs) {
 				platforms.push(gs.addEntity(rockTwo));
 				adamastor.setPos([650, 230]);
 			}
-			else if (this.level==1)
+			else if (this.level==6)
 			{
 				// create multiple rocks
-				var rockOne = new Platform(this, [700, 69], poly_big, "calhau_big");
+				var rockOne = new Platform(this, [650, 69], poly_big, "calhau_big");
 				platforms.push(gs.addEntity(rockOne));
 				adamastor.setPos([845, 230]);
 			}
