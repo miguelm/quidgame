@@ -1,11 +1,8 @@
 /*
- *	JSGameSoup v173, Copyright 2009-2011 Chris McCormick
+ *	JSGameSoup v189, Copyright 2009-2011 Chris McCormick
  *	
  *	LGPL version 3 (see COPYING for details)
  *	
- *	Major missing features:
- *	* Sound
- *
  */
 
 
@@ -231,7 +228,7 @@ function JSGameSoup(canvas, framerate) {
 		if (ev.touches) {
 			var touch = ev.touches[0];
 			mouseX = touch.clientX - canvas.offsetLeft;
-			mouseX = touch.clientY - canvas.offsetTop;
+			mouseY = touch.clientY - canvas.offsetTop;
 			this.pointerPosition = [mouseX, mouseY];
 			return this.pointerPosition;
 		} else {
@@ -407,6 +404,16 @@ function JSGameSoup(canvas, framerate) {
 	}
 	
 	/**
+		Deletes all entities the engine knows about.
+	*/
+	this.clearEntities = function clearEntities() {
+		for (var e=0; e<entities.length; e++) {
+			delEntities.push(entities[e]);
+		}
+		return entities.length > 0;
+	}
+	
+	/**
 		Gets a list of entities which have already been triggered by the current event.
 		Call this inside e.g. pointerUp() to get a list of entities which have also had their pointerUp() method called. Note that only lower priority entities will see the triggers of higher priority entities (e.g. entities with higher priorities get triggered first).
 	*/
@@ -520,11 +527,9 @@ function JSGameSoup(canvas, framerate) {
 		// launch our custom loop
 		looping = setInterval(function() {
 			try {
-				GS.gameSoupLoop()
+				GS.gameSoupLoop();
 			} catch(e) {
 				clearInterval(looping);
-				if (typeof(console) != "undefined")
-					console.log(e);
 				throw(e);
 			}
 		}, 1000 / this.framerate);

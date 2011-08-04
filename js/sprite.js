@@ -11,28 +11,39 @@ function Sprite(anchor, frames, loadedcallback) {
 	var framecount = -1;
 	var frame = 0;
 	var sprite = this;
+	var numframes = 0;
+	var loopcallback = null;
 	this.loaded = false;
 	this.width = 0;
 	this.height = 0;
 	
 	// load up all of the images
 	for (var a in frames) {
+		// replace string entries with Images, unless they already are
 		for (var f=0; f<frames[a].length; f++) {
-			loadcount += 1;
-			var img = new Image();
-			img.src = frames[a][f][0];
-			frames[a][f][0] = img;
-			img.onload = function () {
-				loadcount -= 1;
-				if (loadcount == 0) {
-					if (loadedcallback) {
-						sprite.loaded = true;
-						sprite.width = parseInt(img.width);
-						sprite.height = parseInt(img.height);
-						loadedcallback();
+			if (typeof(frames[a][f][0]) == "string") {
+				loadcount += 1;
+				var img = new Image();
+				img.src = frames[a][f][0];
+				frames[a][f][0] = img;
+				img.onload = function () {
+					loadcount -= 1;
+					if (loadcount == 0) {
+						if (loadedcallback) {
+							sprite.loaded = true;
+							sprite.width = parseInt(img.width);
+							sprite.height = parseInt(img.height);
+							loadedcallback();
+						}
 					}
 				}
 			}
+		}
+		if (loadcount == 0 && loadedcallback) {
+			sprite.loaded = true;
+			sprite.width = frames[a][f][0].width;
+			sprite.height = frames[a][f][0].height;
+			loadedcallback();
 		}
 	}
 	
@@ -65,9 +76,16 @@ function Sprite(anchor, frames, loadedcallback) {
 		Sets which named animation/action to play.
 		@param a is the name of the animation/action you defined on initialisation.
 		@param reset indicates whether the frame number should be reset to the start of the animation.
+		@param callback is called when the animation has completed one loop - receives parameter "action".
 	**/
-	this.action = function(a, reset) {
+	this.action = function(a, reset, callback) {
+		if (typeof(callback) == "undefined") {
+			loopcallback = null;
+		} else {
+			loopcallback = callback;
+		}
 		action = a;
+		numframes = frames[a].length;
 		if (reset) {
 			framecount = frames[a][0][1];
 			frame = 0
@@ -89,6 +107,11 @@ function Sprite(anchor, frames, loadedcallback) {
 		return frame;
 	}
 	
+	/** Returns the total number of frames. **/
+	this.get_num_frames = function() {
+		return numframes;
+	}
+	
 	/** Sets the animation frame to play **/
 	this.set_frame = function(newframe) {
 		frame = newframe;
@@ -98,6 +121,9 @@ function Sprite(anchor, frames, loadedcallback) {
 	this._update = function() {
 		framecount -= 1;
 		if (framecount <= 0) {
+			if (loopcallback && (frame + 1 >= frames[action].length)) {
+				loopcallback(action);
+			}
 			frame = (frame + 1) % frames[action].length;
 			framecount = frames[action][frame][1];
 		}
@@ -141,9 +167,10 @@ function Sprite(anchor, frames, loadedcallback) {
 */
 Sprite.preload = function(images, completedcallback, progresscallback) {
 	var loadcount = images.length;
+	var img = [];
 	for (var i=0; i<images.length; i++) {
-		var img = new Image();
-		img.onload = function () {
+		img[i] = new Image();
+		img[i].onload = function () {
 			loadcount -= 1;
 			if (progresscallback)
 				progresscallback(loadcount);
@@ -151,6 +178,6 @@ Sprite.preload = function(images, completedcallback, progresscallback) {
 				completedcallback();
 			}
 		}
-		img.src = images[i];
+		img[i].src = images[i];
 	}
 }

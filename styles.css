@@ -5,7 +5,7 @@ body {
 }
 
 canvas {
-	background: url("img/bg.png") no-repeat;
+	background: url("img/cenario.png") no-repeat;
 	/*border: 1px solid gray;*/
 	box-shadow: 0 .3em 1em black;
 	-moz-box-shadow: 0 .3em 1em black;
@@ -13,7 +13,7 @@ canvas {
 }
 	
 #main {
-	width: 640px; 
+	width: 980px; 
 	text-align: left;
 	border: 0px; 
 	padding: 10px;  
@@ -28,7 +28,7 @@ h1, h2, span {
 #toolbar {
 	border: 1px dashed #222;
 	position: absolute;
-	width:640px;
+	width:980px;
 }
 
 #toolbar div {
@@ -58,7 +58,7 @@ h1, h2, span {
 
 #winScreen {
 	position:absolute;
-	width:640px;
+	width:980px;
 	height:360px;
 	display:none;
 	text-align:center;
@@ -76,5 +76,51 @@ h1, h2, span {
 }
 
 #winScreen .window div {
+	padding-top: 30px;
+}
+
+#loseScreen {
+	position:absolute;
+	width:980px;
+	height:360px;
+	display:none;
+	text-align:center;
+}
+
+#loseScreen .window {
+	margin: 100px auto auto auto;
+	width:200px;
+	height:125px;
+	background: #ffffff;
+	box-shadow: 0 .3em 1em black;
+	-moz-box-shadow: 0 .3em 1em black;
+	-webkit-box-shadow: 0 .3em 1em black;
+	border-radius: 10px;
+}
+
+#loseScreen .window div {
+	padding-top: 30px;
+}
+
+#endScreen {
+	position:absolute;
+	width:980px;
+	height:360px;
+	display:none;
+	text-align:center;
+}
+
+#endScreen .window {
+	margin: 100px auto auto auto;
+	width:200px;
+	height:125px;
+	background: #ffffff;
+	box-shadow: 0 .3em 1em black;
+	-moz-box-shadow: 0 .3em 1em black;
+	-webkit-box-shadow: 0 .3em 1em black;
+	border-radius: 10px;
+}
+
+#endScreen .window div {
 	padding-top: 30px;
 }

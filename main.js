@@ -3,6 +3,7 @@
 */
 var worldOut;
 var gameSoup_World;
+var running = false;
 
 function QGame(gs) {
 	// Global vars
@@ -13,40 +14,105 @@ function QGame(gs) {
 	/*** The Ball class ***/
 	function Ball(world) {
 		this.type = 'ball';
-		// constants
-		var FALL_FRAMES = 2;
 		
+		
+		var ballImgLoaded = false;
+		var ballImg = new Image();
+		ballImg.onload = function() { ballImgLoaded = true; };
+		
+		ballImg.src = 'img/bala.png';
+				
+		var angle = 0.5;
+		var velocity = 0.5;
+		
+		if (world) {
+			angle = 1-world.angle_slider.effect;
+		}
+		
+		var x = Math.cos(angle*(Math.PI/2));
+		var y = Math.sin(angle*(Math.PI/2));
+
 		// position
-		var pos = this.pos = [40, 50];
+		//var pos = this.pos;// = [220, 250];
+		var pos = this.pos = [147+(x*75), 150+(y*100)];
 		
 		var body;
 		
-		this.init = function()
-		{
+		this.init = function() {
 		}
 
-		this.run = function()
-		{
+		this.run = function() {
 			body = createBall(worldOut, pos[0], pos[1], 10);
-			body.SetLinearVelocity(new b2Vec2(100, -100));
+			// controls the initial speed of the ball
+			
+			// angle - world.angle_slider.effect
+			// velocity - world.velocity_slider.effect / top 500 / bottom 0
+			velocity = 1-world.velocity_slider.effect;
+			angle = 1-world.angle_slider.effect;
+			
+			// I just looooooove trignometry! :)
+			x = Math.cos(angle*(Math.PI/2));
+			y = Math.sin(angle*(Math.PI/2));
+			
+			//x 147 - 220
+			// y de 250 - 150
+			pos = this.pos = [147+(x*75), 150+(y*100)];
+			
+			var force = velocity*500+80;
+			
+			//alert("velocity initial: " + velocity*500);
+			//alert("angle initial: " + angle*-500);
+			
+			//body.SetLinearVelocity(new b2Vec2(velocity*500, angle*-500));
+			body.SetLinearVelocity(new b2Vec2(force*x, force*-y));
+			
 		}
 		
-		this.getBody = function ()
-		{
-			return body;
-		}
+		this.getBody = function () { return body; }
 
-		this.reset = function()
-		{
+		this.reset = function() {
 			worldOut.DestroyBody(body);
 			body = null;
-			pos[0] = 40;
-			pos[1] = 50;
+			
+			//pos = [220,250];
+			
+			angle = 1-world.angle_slider.effect;
+			// I just looooooove trignometry! :)
+			x = Math.cos(angle*(Math.PI/2));
+			y = Math.sin(angle*(Math.PI/2));
+			//x 147 - 220
+			// y de 250 - 150
+			pos = this.pos = [155+(x*70), 270-(y*80)];
+			
+			//pos[0] = 40;
+			//pos[1] = 50;
 		}
 		
+		// sprite which represents the Adamastor
+		var p = this.p = new Sprite(["center", "center"], {
+			"stand": [["img/bala.png", 0]],
+		},
+		// callback gets called when everything is loaded
+		function() {
+			p.action("stand");
+		});
+		
 		// draw the ball every frame
-		this.draw = function(c)
-		{
+		this.draw = function(c) {
+			
+			if (!running) {
+				angle = 1-world.angle_slider.effect;
+				// I just looooooove trignometry! :)
+				x = Math.cos(angle*(Math.PI/2));
+				y = Math.sin(angle*(Math.PI/2));
+				//x 147 - 220
+				// y de 250 - 150
+				pos = this.pos = [155+(x*70), 270-(y*80)];
+				p.draw(c, [pos[0],pos[1]]);
+			}
+			else
+				p.draw(c, [pos[0],pos[1]]);		
+			/*
 			if (body)
 			{
 				drawBody(body, c, "rgba(0, 0, 255, 1)");
@@ -60,22 +126,19 @@ function QGame(gs) {
 				c.closePath();
 				c.fill();
 			}
+			*/	
 		}
 		
-		this.updateanimation = function() {
-
-		}
+		this.updateanimation = function() {}
 		
 		// update the ball position every frame
-		this.update = function()
-		{
+		this.update = function() {
 			if (body)
 			{
 				pos[0] = body.m_position.x;
 				pos[1] = body.m_position.y;
 			}
 		}
-				
 	}
 	
 	/*** The Adamastor class ***/
@@ -88,7 +151,13 @@ function QGame(gs) {
 
 		var liveImg = new Image();
 		liveImg.onload = function() { liveImgLoaded = true; };
-		liveImg.src = 'img/shark_live.png';
+		
+		//var rand = Math.random();
+		
+		//if (rand<=0.5)
+			liveImg.src = 'img/shark_alive.png';
+		//else
+		//	liveImg.src = 'img/shark_alive2.png';
 		
 		var deadImg = new Image();
 		deadImg.onload = function() { deadImgLoaded = true; };
@@ -101,8 +170,8 @@ function QGame(gs) {
 		var adamastor = this;
 		
 		// position
-		var pos = this.pos = position || [(gs.width / 2)+40, gs.height / 2];
-		var startingPos = [pos[0], pos[1]];
+		this.pos = position || [(gs.width / 2)+40, gs.height / 2];
+		this.startingPos = [this.pos[0], this.pos[1]];
 		
 		var body = this.body = null;
 		
@@ -112,26 +181,15 @@ function QGame(gs) {
 			adamastor.reset();
 		}
 		
-		// sprite which represents the Adamastor
-		// var p = this.p = new Sprite(["center", "center"], {
-			// "stand": [["img/adamastor.png", 0],],
-		// },
-		// function() {
-			// p.action("stand");
-		// });
-
-		this.getBody = function ()
-		{
+		this.getBody = function () {
 			return body;
 		}
 
-		this.die = function ()
-		{
-			if (!dead)
-			{
+		this.die = function () {
+			if (!dead) {
 				worldOut.DestroyBody(body);
 				// body = createPoly(worldOut, startingPos[0], startingPos[1], [[[0, 0], [adamastor.width, 0], [adamastor.width, adamastor.height], [0, adamastor.height]]], false);
-				body = createShark(worldOut, startingPos[0], startingPos[1], false);
+				body = createShark(worldOut, this.startingPos[0], this.startingPos[1], false);
 				body.SetLinearVelocity(new b2Vec2(0, -100));
 				body.SetAngularVelocity(5);
 				//dumpObject(body);
@@ -140,19 +198,17 @@ function QGame(gs) {
 		}
 		
 		// draw the adamastor sprite every frame
-		this.draw = function(c)
-		{
-			if (body && (liveImgLoaded || deadImgLoaded))
-			{
-				// drawBody(body, c, "rgba(0, 0, 255, 1)");
-				c.translate(pos[0] , pos[1] );
+		this.draw = function(c) {
+			if (body && (liveImgLoaded || deadImgLoaded)) {
+				
+				//drawBody(body, c, "rgba(0, 0, 255, 1)");
+				
+				c.translate(this.pos[0] , this.pos[1] );
 				c.rotate(body.GetRotation());
-				if (!dead && liveImgLoaded)
-				{
+				if (!dead && liveImgLoaded) {
 					c.drawImage(liveImg, 0, 0, adamastor.width, adamastor.height);
 				}
-				else if (dead && deadImgLoaded)
-				{
+				else if (dead && deadImgLoaded) {
 					c.drawImage(deadImg, - (adamastor.width/2), - (adamastor.height/2), adamastor.width, adamastor.height);
 				}
 			}
@@ -163,44 +219,232 @@ function QGame(gs) {
 		}
 		
 		// update the adamastor position every frame
-		this.update = function()
-		{
-			if (body)
-			{
-				pos[0] = body.m_position.x;
-				pos[1] = body.m_position.y;
+		this.update = function() {
+			if (body) {
+				this.pos[0] = body.m_position.x;
+				this.pos[1] = body.m_position.y;
 			}
 		}
 
-		this.run = function ()
-		{
+		this.run = function () {
 			// body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [p.width, 0], [p.width, p.height], [0, p.height]]], true);
 		}
 		
-		this.reset = function ()
-		{
+		this.reset = function () {
 			dead = false;
-			if (body != null)
-			{
+			if (body != null) {
 				worldOut.DestroyBody(body);
 			}
-			pos[0] = startingPos[0];
-			pos[1] = startingPos[1];
+			this.pos[0] = this.startingPos[0];
+			this.pos[1] = this.startingPos[1];
 			// body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [adamastor.width, 0], [adamastor.width, adamastor.height], [0, adamastor.height]]], true);
-			body = createShark(worldOut, startingPos[0], startingPos[1], true);
+			body = createShark(worldOut, this.startingPos[0], this.startingPos[1], true);
 		}
 		
-		this.destroy = function ()
-		{
-			if (body != null)
-			{
+		this.destroy = function () {
+			if (body != null) {
 				worldOut.DestroyBody(body);
 			}
+		}
+		
+		this.setPos = function (pos) {
+			this.startingPos = pos;
+		}
+	}
+	
+	/*** The Boat class ***/
+	function Boat(world, position) {
+		this.type = 'boat';
+
+		var boat = this;
+		
+		// position
+		var pos = this.pos = position || [100, 259];
+		var startingPos = [pos[0], pos[1]];
+		
+		var body = this.body = null;
+		
+		this.init = function() {
+			//body = createBox(worldOut, pos[0], pos[1], 50, 50, false);
+			//body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [50, 0], [50, 50], [0, 50]]], true);
+			boat.reset();
+		}
+		
+		// sprite which represents the Adamastor
+		 var p = this.p = new Sprite(["center", "center"], {
+			 "stand": [["img/barco.png", 0]],
+		 },
+		 function() {
+			 p.action("stand");
+		 });
+		
+		// draw the adamastor sprite every frame
+		this.draw = function(c) {
+			p.draw(c, [pos[0],pos[1]]);
+		}
+		
+		this.updateanimation = function() {
+			// Updates the sprite if necessary
+		}
+		
+		// update the adamastor position every frame
+		this.update = function() {
+		}
+
+		this.run = function () {
+			// body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [p.width, 0], [p.width, p.height], [0, p.height]]], true);
+		}
+		
+		this.reset = function () {
+		}
+		
+		this.destroy = function () {
+		}
+	}
+	
+	/*** The Lives class ***/
+	function Lives(world, position) {
+		this.type = 'lives';
+
+		var lives = this;
+		
+		var player_lives = this.player_lives = 3;
+		
+		// position
+		var pos = this.pos = position || [425, 345];
+		var startingPos = [pos[0], pos[1]];
+			
+		this.init = function() {
+			//body = createBox(worldOut, pos[0], pos[1], 50, 50, false);
+			//body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [50, 0], [50, 50], [0, 50]]], true);
+			lives.reset();
+		}
+		
+		// sprite which represents a Life
+		 var p = this.p = new Sprite(["center", "center"], {
+			 "stand": [["img/bala.png", 0]],
+		 },
+		 function() {
+			 p.action("stand");
+		 });
+		
+		// draw the adamastor sprite every frame
+		this.draw = function(c) {
+			for (i = 0; i < this.player_lives; i++)
+				p.draw(c, [pos[0]+(i*20),pos[1]]);
+		}
+		
+		this.updateanimation = function() {
+			// Updates the sprite if necessary
+		}
+		
+		// update the adamastor position every frame
+		this.update = function() {
+		}
+
+		this.run = function () {
+			// body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [p.width, 0], [p.width, p.height], [0, p.height]]], true);
+		}
+		
+		this.reset = function () {
+			this.player_lives = 3;
+		}
+		
+		this.destroy = function () {
+		}
+		
+		this.remLive = function () {
+			this.player_lives -= 1;
+		}
+	}
+	
+	/*** The Cannon class ***/
+	function Cannon(world, position) {
+		this.type = 'cannon';
+
+		var cannonImgLoaded = false;
+		var cannonImg = new Image();
+		cannonImg.onload = function() { cannonImgLoaded = true; };
+		
+		cannonImg.src = 'img/cannon.png';
+				
+		this.width = 139;
+		this.height = 40;
+		
+		// constants
+		var cannon = this;
+		var angle = 0;
+		
+		// position
+		var pos = this.pos = position || [100, 259];
+		var startingPos = [pos[0], pos[1]];
+		
+		var body = this.body = null;
+		
+		this.init = function() {
+			//body = createBox(worldOut, pos[0], pos[1], 50, 50, false);
+			//body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [50, 0], [50, 50], [0, 50]]], true);
+			cannon.reset();
+		}
+		
+		// sprite which represents the Adamastor
+		 var p = this.p = new Sprite(["center", "center"], {
+			 "stand": [["img/cannon.png", 0]],
+		 },
+		 function() {
+			 //p.action("stand");
+		 });
+		
+		// draw the cannon sprite every frame
+		this.draw = function(c) {
+			//p.draw(c, [pos[0],pos[1]]);
+			if (cannonImgLoaded) {				
+				c.save();
+				//c.fillStyle = "red";
+				//c.beginPath();
+				//c.rect(145,260,5,5);
+				//c.closePath();
+				//c.fill();
+				
+				// conversion from 0-1
+				//alert("world slider " +  world.angle_slider.effect);
+				
+				angle = 1-world.angle_slider.effect;
+				
+				angle = angle*(Math.PI/2);
+				
+				var degrees_angle = angle*(180/Math.PI) - 15;
+								
+				c.translate( 147, 260 );
+				c.rotate( -1*degrees_angle * Math.PI / 180 );
+				c.translate( -53, -23 );
+				c.drawImage( cannonImg, 0, 0 );
+				c.restore();
+			}
+			
+		}
+		
+		this.updateanimation = function() {
+			// Updates the sprite if necessary
+		}
+		
+		// update the adamastor position every frame
+		this.update = function() {
+		}
+
+		this.run = function () {
+			// body = createPoly(worldOut, pos[0], pos[1], [[[0, 0], [p.width, 0], [p.width, p.height], [0, p.height]]], true);
+		}
+		
+		this.reset = function () {
+		}
+		
+		this.destroy = function () {
 		}
 	}
 	
 	/*** Platform ***/
-	function Platform(world, pos) {
+	function Platform(world, pos, poly) {
 		this.type = 'platform';
 		
 		// the list of props sitting on this platform
@@ -215,8 +459,8 @@ function QGame(gs) {
 		var body = this.body;
 			
 		// sprite which represents the Platform
-		var p = this.p = new Sprite(["center", "center"], {
-			"stand": [["img/adamastor.png", 0],],
+		var p = this.p = new Sprite(["left", "top"], {
+			"stand": [["img/calhau.png", 0]],
 		},
 		// callback gets called when everything is loaded
 		function() {
@@ -226,16 +470,19 @@ function QGame(gs) {
 		// called when this entity is added
 		this.init = function() {
 			
-			// body = this.body = createPoly(
-				// worldOut,
-				// 20,
-				// 100,
-				// [
-					// [[0, 0], [10, 0], [35, 90], [30, 100]],
-					// [[35, 90], [300, 140], [300, 150], [30, 100]],
-					// [[300, 140], [390, 140], [390, 150], [300, 150]]
-				// ],
-				// true);
+			// createPoly(world, x, y, points, fixed, restitution)
+			body = this.body = createPoly(worldOut, pos[0], pos[1], poly, true);
+			 /*body = this.body = createPoly(worldOut,
+				 20,
+				 100,
+				 [
+					poly
+					 //[[0, 0], [10, 0], [35, 90], [30, 100]],
+					 //[[35, 90], [300, 140], [300, 150], [30, 100]],
+					 //[[300, 140], [390, 140], [390, 150], [300, 150]]
+				 ],
+				 true);
+				*/
 		}
 		
 		// update this platform's position every frame
@@ -245,22 +492,28 @@ function QGame(gs) {
 		
 		// draw this platform's sprite every frame
 		this.draw = function(c) {
-			//p.draw(c, world.camera(pos));
-			if (body)
-			{
-				drawBody(body, c, "rgba(255, 0, 0, 1)");
-			}
+			p.draw(c, [pos[0],pos[1]]);
+			
+			// for testing purposes
+			//if (body)
+			//	drawBody(body, c, "rgba(255, 0, 0, 1)");
+			
 		}
 		
 	}
 	
-	/*** Platform ***/
+	/*** Object ***/
 	function Object()
 	{
 		this.type = 'object';
 		this.dragging = false;
 		
 		this._init();
+		
+		this.button_RotateLeft = undefined;
+		this.button_RotateRight = undefined;
+		
+		this.children = [];
 	}
 
 	Object.prototype._init = function ()
@@ -292,6 +545,18 @@ function QGame(gs) {
 	{
 		this.pos = pos;
 		this.world = world;
+		
+		if (this.pos!=undefined)
+		{
+			// Creation of the button boxes used to rotate the objects
+			//this.button_RotateLeft = new Box_Button(this.pos, this, true);
+			//gs.addEntity(this.button_RotateLeft);
+			//this.children.push(this.button_RotateLeft);
+			
+			//this.button_RotateRight = new Box_Button(this.pos, this, false);
+			//gs.addEntity(this.button_RotateRight);
+			//this.children.push(this.button_RotateRight);
+		}
 	}
 	
 	Object.prototype.init = function()
@@ -300,7 +565,7 @@ function QGame(gs) {
 		//body = this.body = function() {	}
 	}
 		
-	// update this platform's position every frame
+	// update this object's position every frame
 	Object.prototype.update = function()
 	{
 		if (this.body != null)
@@ -310,13 +575,14 @@ function QGame(gs) {
 		}
 	}
 		
-		// draw this platform's sprite every frame
+		// draw this object's sprite every frame
 	Object.prototype.draw = function(c)
 	{
 	}
 		
 	Object.prototype.pointerDown = function(i)
 	{
+		this.dragging = true;
 		this.onPointerDown();
 		// if (!this.body && !this.dragging)
 		// {
@@ -339,6 +605,8 @@ function QGame(gs) {
 		
 	Object.prototype.pointerUp = function(i)
 	{
+		if (this.dragging)
+			this.dragging = false;
 		// if (this.dragging)
 		// {
 			// this.dragging = false;
@@ -363,7 +631,57 @@ function QGame(gs) {
 	Object.prototype.createBody = function ()
 	{
 	}
+	
+	/*** Button ***/
+	function Box_Button(pos_box, parent, left)
+	{
+		this.type = 'button';
+		
+		// position
+		var pos = this.pos = pos_box;
+		
+		var body;
+		
+		this.init = function()
+		{
+		}
+		
+		
+		// draw the button every frame
+		this.draw = function(c)
+		{
+			if (!running)
+			{	
+				c.fillStyle = "rgba(0, 100, 0, 1)";
+				c.beginPath();
+				c.moveTo(pos[0], pos[1]);
+			
+				if (left)
+					c.arc(pos[0]-22, pos[1]+6, 15, 0, Math.PI*2, true);
+				else
+					c.arc(pos[0]+100, pos[1]+6, 15, 0, Math.PI*2, true);
+			
+				c.closePath();
+				c.fill();
+			}
+		}
+		
+		this.updateanimation = function() {
 
+		}
+		
+		// update the box button position every frame
+		this.update = function()
+		{
+			if (body)
+			{
+				//pos[0] = body.m_position.x;
+				//pos[1] = body.m_position.y;
+			}			
+		}
+	}
+
+	/*** Box ***/
 	function Box()
 	{
 		this.red = r.nextInt(0, 255);
@@ -387,19 +705,31 @@ function QGame(gs) {
 	Box.prototype.setup = function (world, position, rotation)
 	{
 		Object.prototype.setup.call(this, world, position);
-		
+				
 		this.rotation = rotation || 0;
 	}
-
+	
 	Box.prototype.draw = function (c)
 	{
 		var color = "rgba("+ this.red +"," + this.green + "," + this.blue + ", 1)";
+		
 		if (this.wallImgLoaded)
-		{
+		{	
+			if (this.dragging)
+			{	
+				//c.lineWidth = 5;
+				//c.strokeStyle = "white"; // stroke color
+				//c.strokeRect(this.pos[0], this.pos[1] , this.width, this.height);
+			}
+			
 			c.translate(this.pos[0], this.pos[1]);
 			c.rotate(this.rotation);
 			c.drawImage(this.wallImg, 0, 0, this.width, this.height);
+			
 		}
+		
+
+		
 		// if (this.body)
 		// {
 			// drawBody(this.body, c, color);
@@ -475,6 +805,14 @@ function QGame(gs) {
 			c.fill();
 			c.fillStyle = fill;
 		}
+		
+		if (this.dragging)
+		{
+			c.lineWidth = 5;
+			c.strokeStyle = "white"; // stroke color
+			c.strokeRect(this.pos[0], this.pos[1] , this.width, this.height);
+		}
+		
 	}
 
 	Ramp.prototype.createBody = function ()
@@ -517,9 +855,19 @@ function QGame(gs) {
 		else
 		{
 			var fill = c.fillStyle;
+
+					
 			c.fillStyle = color;
 			c.beginPath();
 			c.rect(this.pos[0],this.pos[1],this.width,this.height);
+			
+			if (this.dragging)
+			{
+				c.lineWidth = 5;
+				c.strokeStyle = "white"; // stroke color
+				c.strokeRect(this.pos[0], this.pos[1] , this.width, this.height);
+			}
+			
 			c.closePath();
 			c.fill();
 		
@@ -536,7 +884,168 @@ function QGame(gs) {
 	{
 		return [this.pos[0], this.pos[1], this.pos[0]+this.width, this.pos[1]+this.height];
 	}
+	
+	/*** Fire Button ***/
+	function Button(world) {
+		this.type = 'button';
 		
+		// position
+		var pos = this.pos = [360, 335];
+		
+		var width = 35;
+		var height = 19;
+		
+		this.init = function() {
+			p.action("normal");
+		}
+
+		this.run = function() {
+				p.action("disabled");
+		}
+		
+		this.reset = function() {
+			if (world.lives.player_lives>0)
+				p.action("normal");
+		}
+		
+		// sprite which represents the Button
+		var p = this.p = new Sprite(["left", "top"], {
+			"normal": [["img/button.png", 0]],
+			"disabled": [["img/button_disable.png", 0]],
+		},
+		// callback gets called when everything is loaded
+		function() {
+			p.action("normal");
+		});
+		
+		// draw the ball every frame
+		this.draw = function(c) {
+			p.draw(c, [pos[0],pos[1]]);
+			/*
+			c.fillStyle = "white";
+			c.beginPath();
+			c.rect(this.pos[0],this.pos[1],width,height);
+			c.closePath();
+			c.fill();
+			*/
+		}
+		
+		this.updateanimation = function() {}
+
+		this.update = function() {
+		}
+		
+		this.pointerBox = function() {
+			return [pos[0], pos[1], pos[0]+width, pos[1]+height];
+		}
+		
+		this.pointerDown = function(i) {
+			doRun();
+		}
+	}
+	
+	/*** Slider ***/
+	function Slider(world, initial_pos, initial_effect) {
+		this.type = 'slider';
+		
+		this.effect = initial_effect || 0.5;
+		
+		this.dragging = false;
+		
+		var posOffSet = [0,0];
+		
+		// position
+		// pode oscilar no eixo dos y de 320 a 355 / portanto delta de 35
+		var pos = this.pos = initial_pos;
+		
+		var width = 7;
+		var height = 9;
+		
+		this.init = function() {
+		}
+
+		this.run = function() {
+		}
+		
+		this.reset = function() {
+		}
+		
+		// sprite which represents the Button
+		var p = this.p = new Sprite(["left", "top"], {
+			"normal": [["img/slider.png", 0]],
+		},
+		// callback gets called when everything is loaded
+		function() {
+			p.action("normal");
+		});
+		
+		// draw the ball every frame
+		this.draw = function(c) {
+			if (pos[1]>355)
+				pos[1]=355;
+				
+			if (pos[1]<320)
+				pos[1]=320;
+			
+			p.draw(c, [pos[0],pos[1]]);
+			
+			/*
+			c.fillStyle = "white";
+			c.beginPath();
+			c.rect(initial_pos[0]-10,317,width+20,317-358);
+			c.closePath();
+			c.fill();
+			*/
+		}
+				
+		this.updateanimation = function() {}
+
+		this.update = function() {
+			// calculo do efeito
+			this.effect = (pos[1]-320)/35;
+		}
+		
+		this.pointerBox = function() {
+			//return [initial_pos[0]-10,317, initial_pos[0]+width+20, 358];
+			return [pos[0], pos[1], pos[0]+width, pos[1]+height];
+		}
+		
+		this.pointerDown = function(i) {
+			//alert("slider touched");
+			
+			/*
+			if (gs.pointerPosition[1]>355)
+				pos[1] = 355;
+			else if (gs.pointerPosition[1]<320)
+				pos[1] = 320;
+			else
+				pos[1] = gs.pointerPosition[1];
+			
+			posOffSet[1] = pos[1] - gs.pointerPosition[1];
+			*/
+
+			if (!this.dragging) {
+				this.dragging = true;
+				posOffSet[1] = pos[1] - gs.pointerPosition[1];
+			}
+			
+		}
+		
+		this.pointerMove = function() {
+			
+			if (this.dragging) {
+				pos[1] = gs.pointerPosition[1] + posOffSet[1];
+			}
+			
+		}
+		
+		this.pointerUp = function(i) {
+			//alert("dragging ended");
+			if (this.dragging)
+				this.dragging = false;
+		}
+		
+	}
 	
 	/*** World ***/
 	function World()
@@ -544,7 +1053,12 @@ function QGame(gs) {
 		var thisWorld = this;
 
 		var playerWon = false;
-		var running = false;
+		//var running = false; // passou a variavel global
+		
+		var playerLost = false;
+		
+		var level = this.level = 1;
+		
 		// how much gravity to apply to objects each frame
 		this.gravity = 0.4;
 		
@@ -554,9 +1068,22 @@ function QGame(gs) {
 		// background colour
 		//var bg = 'rgba(240, 255, 255, 1.0)';
 		//var bg = 'white';
+		var fire_button = this.fire_button = new Button(this);
+		
+		var angle_slider = this.angle_slider = new Slider(this, [201, 350], 0.85);
+		
+		var velocity_slider = this.velocity_slider = new Slider(this, [322, 338]);
+				
+		var boat = this.boat = new Boat(this);
+		
+		var cannon = this.cannon = new Cannon(this, [163, 257]);
+		
+		var lives = this.lives = new Lives(this);
 		
 		var player = this.player = new Ball(this);
-		var adamastor = new Adamastor(this, [400 + (Math.random() * 180), 50 + (Math.random() * 200)]);
+		
+		// adds adamastor to the world			
+		var adamastor = new Adamastor(this, adamastor_position());
 		
 		var platforms = [];
 		var objects = [];
@@ -568,11 +1095,13 @@ function QGame(gs) {
 		worldOut = new b2World( worldAABB, new b2Vec2( 0, 200 ), true );
 
 		// floor, ceiling, and walls
-		// createBox(worldOut, gs.width / 2, gs.height + 200, gs.width, 200); //top
-		// createBox(worldOut, gs.width / 2, -200, gs.width, 200); //bottom
-		// createBox(worldOut, - 200, gs.height / 2, 200, gs.height); //left
-		// createBox(worldOut, gs.width + 200, gs.height / 2, 200, gs.height);	//right
-
+		// anteriormente gs.height + 200
+		//createBox(worldOut, gs.width / 2, gs.height + 147, gs.width, 200); //bottom
+		//createBox(worldOut, gs.width + 200, gs.height / 2, 200, gs.height);	//right
+		
+		createBox(worldOut, gs.width / 2, -200, gs.width, 200); //top
+		createBox(worldOut, - 200, gs.height / 2, 200, gs.height); //left
+		
 		// var imgBg = new Image();
 		// imgBgIsReady = false;
 		// imgBg.onload = function() { imgBgIsReady = true; };
@@ -595,14 +1124,31 @@ function QGame(gs) {
 			// Added ball to the World
 			gs.addEntity(player);
 			
+			// Added Cannon to the World
+			gs.addEntity(cannon);
+			
+			// Added Lives indicator to the World
+			gs.addEntity(lives);
+			
+			// Added Boat to the World
+			gs.addEntity(boat);
+			
 			// Added Adamastor to the World
 			gs.addEntity(adamastor);
 			
-			// Static platforms added to the World
-			platforms.push(gs.addEntity(new Platform(this, [gs.width / 2, gs.height / 2])));
+			// Added Fire Button to the World
+			gs.addEntity(fire_button);
 			
-			// Moveable platforms added to the world
-			//objects.push
+			// Added Left Slider - controls angle
+			gs.addEntity(angle_slider);
+			
+			// Added Right Slider - controls velocity
+			gs.addEntity(velocity_slider);
+			
+			this.levelLoad();
+			
+			// Static platforms added to the World
+			//platforms.push(gs.addEntity(new Platform(this, [gs.width / 2, gs.height / 2])));
 		}
 		
 		// this.draw = function (c)
@@ -614,7 +1160,27 @@ function QGame(gs) {
 				// c.drawImage(imgBg,0,0);
 			// }
 		// }
-
+		
+		this.keyUp_37 = this.keyUp_65 = function() {
+			velocity_slider.pos[1] += 2;
+		}
+		
+		this.keyUp_39 = this.keyUp_68 = function() {
+			velocity_slider.pos[1] -= 2;
+		}
+		
+		this.keyUp_38 = this.keyUp_87 = function() {
+			angle_slider.pos[1] -= 2;
+		}
+		
+		this.keyUp_40 = this.keyUp_83 = function() {
+			angle_slider.pos[1] += 2;
+		}
+		
+		this.keyUp_32 = function() {
+			doRun();
+		}
+		
 		this.startDrag = function (obj)
 		{
 			if (!running && !playerWon)
@@ -703,20 +1269,50 @@ function QGame(gs) {
 						m = m.next;
 					}
 				}
+				
+				
+				// verify if ball went overboard
+				if (!playerLost)
+				{
+					//if (player.pos[0]>gs.width || player.pos[1]>gs.height)
+					if (player.pos[1]>gs.height || player.pos[0]>gs.width+15)
+					{
+						if (lives.player_lives==0)
+							thisWorld.gameLose();
+							
+						if (lives.player_lives>=0)
+							this.reset();
+					}
+				}
+				
 			}
 		}
 
 		this.gameEnd = function ()
 		{
 			playerWon = true;
-			setTimeout(function() { document.getElementById("winScreen").style.display = "block"; }, 3000);
+			if (this.level>=4)
+			{
+				setTimeout(function() { document.getElementById("endScreen").style.display = "block"; }, 3000);
+				this.level = 1;
+			}
+			else
+				setTimeout(function() { document.getElementById("winScreen").style.display = "block"; }, 3000);
+		}
+		
+		this.gameLose = function ()
+		{
+			//this.level = 1;
+			playerLost = true;
+			playerWon = false;			
+			setTimeout(function() { document.getElementById("loseScreen").style.display = "block"; }, 1000);
 		}
 		
 		// remove a platform from the world
 		this.remove = function(which) {
-			platforms.remove(which);
-			//console.log(platforms.length);
+			worldOut.DestroyBody(which.body);
 			gs.delEntity(which);
+			//console.log(platforms.length);
 		}
 		
 		// add a new random row of platforms to the world
@@ -733,6 +1329,8 @@ function QGame(gs) {
 				running = true;
 				player.run();
 				adamastor.run();
+				fire_button.run();
+				lives.remLive();
 				for (var i = 0; i < objects.length; i++)
 				{
 					objects[i].run();
@@ -742,39 +1340,130 @@ function QGame(gs) {
 		
 		this.reset = function ()
 		{
+			document.getElementById("loseScreen").style.display = "none";
 			if (running && !playerWon)
 			{
 				running = false;
 				player.reset();
 				adamastor.reset();
+				fire_button.reset();
 				for (var i = 0; i < objects.length; i++)
 				{
 					objects[i].reset();
 				}
+				
 			}
 		}
 		
 		this.restart = function ()
 		{
 			document.getElementById("winScreen").style.display = "none";
+			document.getElementById("loseScreen").style.display = "none";
+			document.getElementById("endScreen").style.display = "none";
 			playerWon = false;
+			playerLost = false;
 			adamastor.destroy();
 			gs.delEntity(adamastor);
-			adamastor = new Adamastor(this, [400 + (Math.random() * 180), 50 + (Math.random() * 200)]);
+			adamastor = new Adamastor(this, adamastor_position());
+			//adamastor = new Adamastor(this, [400 + (Math.random() * 180), 50 + (Math.random() * 200)]);
 			gs.addEntity(adamastor);
+			lives.reset();
+			fire_button.reset();
 			thisWorld.reset();
+			
 			for (var i = 0; i < objects.length; i++)
 			{
+				if (objects[i].type=='object')
+				{
+					for (var j = 0; j < objects[i].children.length; j++)
+					{
+						gs.delEntity(objects[i].children[j]);
+					}
+				}
+				
 				gs.delEntity(objects[i]);
 			}
+						
 			objects = [ ];
+		}
+		
+		this.nextlevel = function ()
+		{
+				this.level += 1;
+				this.restart();	
+				this.levelLoad();
+		}
+		
+		this.levelLoad = function ()
+		{
+			var size = platforms.length;
+			for (var j = 0; j < size; j++) {
+				this.remove(platforms[j]);
+			}
+			
+			if (this.level==1)
+			{
+				// object creation
+				adamastor.setPos(adamastor_position());
+			}
+			else if (this.level==2)
+			{
+				// create rock
+				var poly = [ 
+							[[70,2], [100, 2], [150, 60], [30, 60]],
+				  			[[30,60], [148, 60], [148,108], [-5, 108]]
+							];
+				var rock = new Platform(this,  [515, 208], poly);
+				platforms.push(gs.addEntity(rock));
+				
+				//var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
+				adamastor.setPos([750, 230]);
+			}
+			else if (this.level==3)
+			{
+				// create rock
+				var poly = [ 
+							[[70,2], [100, 2], [150, 60], [30, 60]],
+				  			[[30,60], [148, 60], [148,108], [-5, 108]]
+							];
+				var rock = new Platform(this,  [515, 208], poly);
+				platforms.push(gs.addEntity(rock));
+				
+				//var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
+				adamastor.setPos([680, 230]);
+			}
+			else if (this.level==4)
+			{
+				// create multiple rocks
+				// create rock
+				var poly = [ 
+							[[70,2], [100, 2], [150, 60], [30, 60]],
+				  			[[30,60], [148, 60], [148,108], [-5, 108]]
+							];
+				var rockOne = new Platform(this,  [490, 208], poly);
+				var rockTwo = new Platform(this,  [750, 208], poly);
+				
+				platforms.push(gs.addEntity(rockOne));
+				platforms.push(gs.addEntity(rockTwo));
+				
+				//var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
+				adamastor.setPos([650, 230]);
+			}
 		}
 	}
 	
 	// preload all of the sprites we will use in this game
 	Sprite.preload([
-			"img/adamastor.png",
-			"img/bg.png"
+			"img/cenario.png",
+			"img/shark_dead.png",
+			"img/shark_alive.png",
+			"img/button.png",
+			"img/button_disable.png",
+			"img/slider.png",
+			"img/barco.png",
+			"img/calhau.png",
+			"img/cannon.png",
+			"img/bala.png"
 		],
 		// create the world
 		function() { 
@@ -790,7 +1479,8 @@ function createRamp() {
 }
 
 function createWall(){
-	gameSoup_World.addWall([50,50], Math.PI * 30 / 180);	
+	//gameSoup_World.addWall([100,100], 0);
+	gameSoup_World.addWall([gs.width/2,gs.height/2], Math.PI * 30 / 180);	
 }
 
 function createSpring() {
@@ -803,7 +1493,7 @@ function createShark(world, x, y, fixed)
 
 	var circle = new b2CircleDef();
 	circle.localPosition = new b2Vec2(40, 40);
-	circle.radius = 40;
+	circle.radius = 38;
 	if (!fixed)
 	{
 		circle.density = 1;
@@ -977,6 +1667,21 @@ function doReset()
 function doRestart()
 {
 	gameSoup_World.restart();
+	gameSoup_World.levelLoad();
+}
+
+function doNextLevel()
+{
+	gameSoup_World.nextlevel();
+}
+
+function adamastor_position()
+{
+	var adamastor_position = [650 + (Math.random() * 190), 220 + (Math.random() * 15)];
+	if (adamastor_position[1]>=gs.height-90)
+		adamastor_position[1] = gs.height - 100;
+	
+	return adamastor_position;
 }
 
 function dumpObject(obj)
