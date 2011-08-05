@@ -16,10 +16,12 @@ This project was developed by the good people at Quidgest:
 
 * [Carlos Xavier][3]
 * [Miguel Marinhas][4]
+* Graphics by [André Ancião][5]
 
 [0]: http://www.quidgest.com
 [1]: http://mccormick.cx/projects/jsGameSoup
 [2]: https://github.com/thinkpixellab/box2d
 [3]: http://www.linkedin.com/pub/carlos-xavier/0/683/587
 [4]: https://github.com/miguelm
+[5]: http://www.linkedin.com/pub/andr%C3%A9-anci%C3%A3o/10/568/6a0
 

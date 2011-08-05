@@ -1,13 +1,13 @@
 # TODO
 
 ## Game mechanics
-* Object rotation
-* Number of available pieces
+* Possibility of adding new objects to the world by the player
 
 ## Design
+* Display level number
 * Add new designed assets
-* Highlight selected objects (Bug on sprite pieces) / rotation
+* Design of player added objects - Highlight selected objects (Bug on sprite pieces) / rotation
 
 # Generic
-* More levels
+* More levels / higher difficulty
 
