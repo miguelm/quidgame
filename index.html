@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta name="http-equiv" content="Content-type: text/html; charset=UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=9" >
 
 <head>
@@ -32,9 +32,10 @@
 </head>
 
 <body onload="launch();">
+	
+	<a href="http://github.com/miguelm/quidgame"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
 
 	<div id="main">
-		<h1>Vence o Adamastor!</h1>
 		<div id="winScreen">
 			<div class="window">
 				<div>
@@ -63,6 +64,38 @@
 		</div>
 		
 		<canvas width="980" height="370" id="canvas"></canvas>
+		
+		<div id="toolbar">
+			<h2>Objectivo: Acertar com a bala do canhão no Adamastor!</h2>
+			<h3>Para jogar use o rato ou teclas</h3>
+			
+			<div class="tool">
+				<span>+ Ângulo</span>
+				<img src="img/key_up.png" alt="Aumentar ângulo do canhão"/>
+			</div>
+			
+			<div class="tool">
+				<span>- Ângulo</span>
+				<img src="img/key_down.png" alt="Diminuir ângulo do canhão"/>
+			</div>
+			
+			<div class="tool">
+				<span>+ Força</span>
+				<img src="img/key_left.png" alt="Aumentar força do disparo"/>
+			</div>
+			
+			<div class="tool">
+				<span>- Força</span>
+				<img src="img/key_right.png" alt="Diminuir força do disparo"/>
+			</div>
+			
+			<div class="tool">
+				<span>Disparar</span>
+				<img src="img/key_spacebar.png" alt="Disparar"/>
+			</div>
+			
+		</div>
+		
 	</div>
 	
 </body>

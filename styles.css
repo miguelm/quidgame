@@ -21,7 +21,7 @@ canvas {
     position: relative;
 }
 
-h1, h2, span {
+h1, h2, h3, span {
 	text-align: center;
 }
 
@@ -32,7 +32,7 @@ h1, h2, span {
 }
 
 #toolbar div {
-	width: 64px;
+	width: 120px;
 	float:left;
 	padding: 10px 10px;
 	text-align: center;
