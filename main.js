@@ -1305,7 +1305,7 @@ function QGame(gs) {
 		this.gameLose = function ()
 		{
 			// makes the game harder!
-			this.level = 1;
+			//this.level = 1;
 			playerLost = true;
 			playerWon = false;			
 			setTimeout(function() { document.getElementById("loseScreen").style.display = "block"; }, 1000);
